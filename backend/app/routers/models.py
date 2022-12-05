@@ -12,16 +12,20 @@ from app.check.checkModel import dict_compare,flatten_dict
 from fastapi.templating import Jinja2Templates
 from bson.objectid import ObjectId
 from unicornException import UnicornException
-
+from pydantic import BaseModel
 
 router = APIRouter()
-templates = Jinja2Templates(directory="static")
+templates = Jinja2Templates(directory="dist")
 
 # Setting up connection with MongoDB
 client = MongoClient(db_url)
 database = client["feedbackLoop"]
 inputModel = database["inputObjectModel"] 
 inputTransaction = database["inputTransaction"] 
+
+@router.get("/app", tags=["models"])
+async def launch_app(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @router.get("/api/models", tags=["models"])
 async def read_models():
@@ -33,60 +37,60 @@ async def read_models():
         item_json_dumped = json.dumps(item, default=json_util.default)
         #load it again
         item_json = json.loads(item_json_dumped)
-        #flatteb the object
-        item_json_flat = flatten_dict(item_json)
+        #flatteb the object - no need for models
+        #item_json_flat = flatten_dict(item_json)
         #append to dataset 
-        data.append(item_json_flat)
+        data.append(item_json)
     return data
 
-@router.get("/models/{objectModelId}", tags=["models"])
+
+@router.get("/api/models/{objectModelId}", tags=["models"])
 async def read_model(objectModelId: str, request: Request):
+    data = []
     if bson.objectid.ObjectId.is_valid(objectModelId):
         inputModelQuery = inputModel.find_one({"_id": ObjectId(objectModelId)})
-        inputModelQuery_flattend = flatten_dict(json.loads(json.dumps(inputModelQuery, default=json_util.default)))
+        #inputModelQuery_flattend = flatten_dict(json.loads(json.dumps(inputModelQuery, default=json_util.default)))
         if inputModelQuery is None: 
             raise UnicornException(name=objectModelId,label="ObjectModelId does not exist!")
         else: print(inputModelQuery)
     else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
 
-    return inputModelQuery_flattend
+    return json.loads(json.dumps(inputModelQuery, default=json_util.default))
+    #return inputModelQuery_flattend
 
+class Trs_model(BaseModel):
+    object_name: str = None
+    object_description: str = None
+    object_model: object = None
+    allow_change: bool = False
+    allow_change_until_date: datetime = None # ISO 8601 format
+    allow_multiple: bool = False
 
-@router.get("/models/{objectModelId}", tags=["models"])
-async def read_model(objectModelId: str, request: Request):
-    if bson.objectid.ObjectId.is_valid(objectModelId):
-        inputModelQuery = inputModel.find_one({"_id": ObjectId(objectModelId)})
-        inputModelQuery_flattend = flatten_dict(json.loads(json.dumps(inputModelQuery, default=json_util.default)))
-        if inputModelQuery is None: 
-            raise UnicornException(name=objectModelId,label="ObjectModelId does not exist!")
-        else: print(inputModelQuery)
-    else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
-
-    return inputModelQuery_flattend
-
-
-@router.get("/init/models/", tags=["models"])
-def insertObjectModelViaGet(request: Request):
+@router.post("/api/models", tags=["models"])
+def create_model(trs_model: Trs_model):
+    print(trs_model)
     _id = inputModel.insert_one({
         'object_creation_date': datetime.now(),
         'object_modification_date': datetime.now(),
         'object_created_by': "Roman",
         'object_modified_by': "Roman",
-        'object_name':'test',
-        'object_model':{
-            'Roman':{'label':'SMC','values':['IDX','FSI']},
-            'price':{'label':'price','values':'int'},
-            'rating':{'label':'rating','values':[1,2,3,4,5]},
-        },
+        'object_name':trs_model.object_name,
+        'object_description':trs_model.object_description,
+        'object_model':trs_model.object_model,
         'allow_change':{
-            'value':True,
-            'before':datetime.now()+timedelta(days=1)
+            'value':trs_model.allow_change,
+            'before':trs_model.allow_change_until_date
         },
         'allow_multiple':{
-            'value':False,
-            'frequency':'daily'
-        }
+            'value':trs_model.allow_multiple,
+       #     'frequency':'daily'
+       }
         
         
         }).inserted_id
+
+
+
     return f"Model persisted via get under id: {_id}"
+    #return f"Model persisted via get under id: {request}"
+    #return f"Model persisted via get under id: {_id}"

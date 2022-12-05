@@ -45,6 +45,11 @@ database = client["feedbackLoop"]
 inputModel = database["inputObjectModel"] 
 inputTransaction = database["inputTransaction"] 
 
+@router.get("/delete/transactions/", tags=["transactions"])
+def deleteAll(request: Request):
+    inputTransaction.drop()
+    return "deleted"
+
 @router.get("/transactions/", tags=["transactions"])
 async def read_transactions():
     return [{"username": "Rick"}, {"username": "Morty"}]
@@ -72,6 +77,15 @@ def insertTransactionViaBrowser(objectModelId: str, payload: str, request: Reque
     else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
     
     return templates.TemplateResponse("fast.html", {"request": request, "objectModelId":objectModelId, "payload":payload, "model":inputModelQuery})
+
+
+@router.post("/test/api/transaction/{objectModelId}/{payload}")
+async def postTransaction(objectModelId: str, payload: str, request: Request):
+    inputModelQuery = inputModel.find_one({"_id": ObjectId(objectModelId)})
+    payload_base64_decode = base64.b64decode(payload)
+    payload_to_dict = json.loads(payload_base64_decode)
+    payload = dict_compare(inputModelQuery['object_model'],payload_to_dict)
+    return "test"
 
 
 @router.post("/api/transaction/{objectModelId}/{payload}")
@@ -190,7 +204,6 @@ def getTransactionsList(objectModelId: str, request: Request):
 
 @router.get("/api/transactions/{objectModelId}", tags=["transactions"])
 def getTransactions(objectModelId: str, request: Request):
-    payload ={}
     data = []
     if bson.objectid.ObjectId.is_valid(objectModelId):
         inputTransactionQuery = inputTransaction.find({"objectModelId": ObjectId(objectModelId)})
@@ -203,14 +216,16 @@ def getTransactions(objectModelId: str, request: Request):
             item_json_flat = flatten_dict(item_json)
             #append to dataset 
             data.append(item_json_flat)
-        payload['data']=data
         #inputTransactionQuery_flattend = flatten_dict(json.loads(json.dumps(inputTransactionQuery, default=json_util.default)))
         if inputTransactionQuery is None: 
             raise UnicornException(name=objectModelId,label="ObjectModelId does not exist!")
         else: print(inputTransactionQuery)
     else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
 
-    return json.dumps(payload)#inputTransactionQuery_flattend
+    return data
+
+
+
 
 #user can get a live feed of the data_stream_id
 @router.websocket("/feed/transactions/{objectModelId}")

@@ -67,9 +67,9 @@ app.include_router(transactions.router)
 #    uvicorn.run("server:app", host="127.0.0.1", port=8000, log_level="info")
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/", StaticFiles(directory="dist", html=True), name="static")
 
-templates = Jinja2Templates(directory="static")
+templates = Jinja2Templates(directory="dist")
 
 # Setting up connection with MongoDB
 client = MongoClient(db_url)
@@ -114,4 +114,4 @@ def deleteAll(request: Request):
 
 @app.get("/app/")
 async def launch_app(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return "yo"
