@@ -114,7 +114,8 @@ async def launch_app(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @router.get("/api/models", tags=["models"])
-async def read_models(token: str = Depends(oauth2_scheme)):
+#async def read_models(token: str = Depends(oauth2_scheme)):
+async def read_models():
     #if bson.objectid.ObjectId.is_valid():
     data = []
     inputModelQuery = inputModel.find({})
