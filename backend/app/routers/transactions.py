@@ -13,6 +13,8 @@ import bson
 import random
 import base64
 from datetime import date,datetime,timedelta
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter()
 templates = Jinja2Templates(directory="static")

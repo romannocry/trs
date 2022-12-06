@@ -41,6 +41,7 @@ from app.routers import models
 from app.routers import transactions
 from app.check.checkModel import dict_compare,flatten_dict
 from app.db.db import db_url
+from fastapi.security import OAuth2PasswordBearer
 
 
 
@@ -114,4 +115,4 @@ def deleteAll(request: Request):
 
 @app.get("/app/")
 async def launch_app(request: Request):
-    return "yo"
+    return templates.TemplateResponse("index.html", {"request": request})
