@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { JsonForms } from '@jsonforms/react';
-import { person } from '@jsonforms/examples';
+import { object, person } from '@jsonforms/examples';
 import {
   materialRenderers,
   materialCells,
@@ -8,6 +8,8 @@ import {
 import { BrowserRouter, HashRouter, Link, Route, useParams } from "react-router-dom";
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import {Buffer} from 'buffer';
+
 //Goal of Model Links is to give the links to:
 // - fast fill up to 2 attributes without seeing the form - close on post
 // - fast fill up to 2 attributes and arrive on the form page for full completion
@@ -46,8 +48,36 @@ function Form()  {
     }, []);
 
     const handleSubmit = () =>{
-        console.log(data)
-    }
+      console.log(data)
+      console.log(objectModelId)
+      const encodedData = Buffer.from(JSON.stringify(data)).toString('base64');
+      console.log(encodedData)
+      fetch('http://127.0.0.1:8000/api/transaction/'+objectModelId+'/'+encodedData, {
+        method: 'POST',
+        headers: {
+         'Content-Type': 'application/json',
+         'Authorization': JSON.stringify({'id':1,'username':'roman','email':'babe'})        
+        
+        },
+        //body: JSON.stringify(trs_model)
+
+     })
+     .then((response) => response.json())
+     .then((data) => {
+        console.log(data);
+        //setModels(data)
+        // Handle data
+     })
+     .catch((err) => {
+        console.log(err.message);
+     });
+        return () => {
+        //componentIsMounted.current = false;
+        };
+      
+    };
+
+
   return (
     <div>
           <JsonForms

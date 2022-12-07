@@ -39,7 +39,7 @@ def dict_compare(objectModel, payloadModel):
                 else: 
                     print("payload "+ str(payloadModel[k]) + " NOT authorized in model, type expected: "+str(v['type'])+", type received:"+str(type(payloadModel[k])))
                     raise UnicornException(name=payloadModel[k],label="invalid payload, type expected:"+str(v['type'])+", type received:"+str(type(payloadModel[k])))
-            
+            ## NEED TO HANDLE MULTI ENUM ##
         else: #k in required_keys:
             if (k in required_keys):
             #should be able to push a subset of the data
