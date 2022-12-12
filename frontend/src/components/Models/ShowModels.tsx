@@ -19,9 +19,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid'; // Grid version 1
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ModelCard from './ModelCard';
@@ -56,14 +54,18 @@ function ShowModels() {
       componentIsMounted.current = false;
       };
   }, []);
+
+
   return (
-    <Stack padding={1} direction="row" spacing={2}>
+    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
     {models.map((model,index) => {
       return (
+        <Grid xs={12} md={4} lg={3}>
           <ModelCard model={model} key={index}/>
+        </Grid>
       )     
       })}
-    </Stack>
+  </Grid>
   );
 }
 

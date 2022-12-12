@@ -17,6 +17,9 @@ import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
+import {Link, Routes, Route, useNavigate} from 'react-router-dom';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 
 
 
@@ -99,6 +102,8 @@ function CreateModel() {
     const [settings, setSettings] = useState<any>({});
     const [settingsSchema, setSettingsSchema] = useState(settingSchema);
     const [InitialSchema, setUiSchema] = useState(newschema);
+    const navigate = useNavigate();
+    const MySwal = withReactContent(Swal)
 
     const handleSubmit = () =>{
       console.log("creating model")
@@ -126,13 +131,31 @@ function CreateModel() {
      })
      .then((response) => response.json())
      .then((data) => {
-        console.log(data);
-        //setModels(data)
-        // Handle data
+      let timerInterval   
+      MySwal.fire({
+          //position: 'top-end',
+          icon: 'success',
+          title: 'You are being redirected to your datasets settings page',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: () => {
+            MySwal.showLoading(null);
+          },
+          didClose: () => {
+            navigate('/links/'+data.$oid);
+          }
+        })
      })
      .catch((err) => {
         console.log(err.message);
-     });
+        MySwal.fire({
+          //position: 'top-end',
+          icon: 'error',
+          title: err.message,
+          showConfirmButton: false,
+          timerProgressBar: true,
+        })     });
         return () => {
         //componentIsMounted.current = false;
         };

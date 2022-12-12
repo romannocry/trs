@@ -17,7 +17,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter()
-templates = Jinja2Templates(directory="static")
+templates = Jinja2Templates(directory="dist")
 
 class ConnectionManager:
     def __init__(self):
@@ -56,6 +56,11 @@ def deleteAll(request: Request):
 async def read_transactions():
     return [{"username": "Rick"}, {"username": "Morty"}]
 
+@router.get("/forms/{objectModelId}/{payload}")
+async def launch_app(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
 @router.get("/edit/transaction/{objectModelId}/{payload}")
 def insertTransactionViaBrowser(objectModelId: str, payload: str, request: Request):
     if bson.objectid.ObjectId.is_valid(objectModelId):
@@ -67,19 +72,6 @@ def insertTransactionViaBrowser(objectModelId: str, payload: str, request: Reque
     else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
     
     return templates.TemplateResponse("main.html", {"request": request, "objectModelId":objectModelId, "payload":payload, "model":inputModelQuery})
-
-@router.get("/persist/transaction/{objectModelId}/{payload}")
-def insertTransactionViaBrowser(objectModelId: str, payload: str, request: Request):
-    if bson.objectid.ObjectId.is_valid(objectModelId):
-        inputModelQuery = inputModel.find_one({"_id": ObjectId(objectModelId)})
-        #inputModelQuery_flattend = flatten_dict(json.loads(json.dumps(inputModelQuery, default=json_util.default)))
-        if inputModelQuery is None: 
-            raise UnicornException(name=objectModelId,label="ObjectModelId does not exist!")
-        else: print(inputModelQuery)
-    else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
-    
-    return templates.TemplateResponse("fast.html", {"request": request, "objectModelId":objectModelId, "payload":payload, "model":inputModelQuery})
-
 
 @router.post("/test/api/transaction/{objectModelId}/{payload}")
 async def postTransaction(objectModelId: str, payload: str, request: Request):

@@ -15,6 +15,7 @@ import Col from 'react-bootstrap/Col';
 import CreateModel from './components/Models/CreateModel';
 import Form from './components/Forms/Form';
 import ModelLinks from './components/Models/ModelLinks';
+import Layout from './components/Testing/layout';
 
 function App() {
   const [theme, setTheme] = useState('light');
@@ -31,10 +32,17 @@ function App() {
        <CollapsibleExample></CollapsibleExample>
        <Container fluid>
           <Routes>
+          <Route path="/layout" element={<Layout/>}/>
           <Route path="/models" element={<Models/>}/>
           <Route path="/models/create" element={<CreateModel/>}/>
           <Route path="/links/:objectModelId" element={<ModelLinks/>}/>
-          <Route path="/forms/:objectModelId" element={<Form/>}/>
+          <Route path="/forms/:objectModelId">
+            <Route path="" element={<Form />} />
+            <Route path=":payload">
+            <Route path="" element={<Form />} />
+            <Route path=":type" element={<Form />} />
+            </Route>
+          </Route>
           <Route path="/transactions/:objectModelId" element={<ShowTransactions/>}/>
         </Routes>
       </Container> 

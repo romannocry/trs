@@ -31,6 +31,14 @@ const prod_ip = "192.168.1.7"
 const dev_ip = "172.0.0.1"
 
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
@@ -56,7 +64,7 @@ const ModelCard = (props:any) => {
   };
   //<ul class="c-table__row" onClick=${() => alert(modelState.index)}>
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card > 
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -103,7 +111,51 @@ const ModelCard = (props:any) => {
 };
 
 export default ModelCard;
+/*
+    <Card sx={{ maxWidth: 345 }}>
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+            R
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings">
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title={modelState.object_name}
+        subheader={modelState.object_creation_date.$date}
+      />
 
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {modelState._id.$oid}
+        </Typography>
+
+      </CardContent>
+      <CardActions disableSpacing>
+        <Link to={`/transactions/${modelState._id.$oid}`}>
+          <IconButton aria-label="Show dataset">
+            <DataArrayIcon />
+          </IconButton>
+        </Link>
+        <Link to={`/forms/${modelState._id.$oid}`}>
+          <IconButton aria-label="Show form">
+            <DynamicFormIcon />
+          </IconButton>
+        </Link>
+        <Link to={`/links/${modelState._id.$oid}`}>
+          <IconButton aria-label="Show links">
+            <ShareIcon />
+          </IconButton>
+        </Link>
+        
+      </CardActions>
+
+    </Card>
+
+    */
 /*
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader

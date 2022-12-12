@@ -116,3 +116,5 @@ def deleteAll(request: Request):
 @app.get("/app/")
 async def launch_app(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+

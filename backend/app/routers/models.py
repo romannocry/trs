@@ -156,7 +156,7 @@ class Trs_model(BaseModel):
 @router.post("/api/models", tags=["models"])
 def create_model(trs_model: Trs_model):
     print(trs_model)
-    _id = inputModel.insert_one({
+    model_id = inputModel.insert_one({
         'object_creation_date': datetime.now(),
         'object_modification_date': datetime.now(),
         'object_created_by': "Roman",
@@ -178,6 +178,6 @@ def create_model(trs_model: Trs_model):
 
 
 
-    return f"Model persisted via get under id: {_id}"
+    return json.loads(json.dumps(model_id, default=json_util.default))
     #return f"Model persisted via get under id: {request}"
     #return f"Model persisted via get under id: {_id}"
