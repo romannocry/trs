@@ -24,7 +24,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ModelCard from './ModelCard';
 
-const prod_ip = "192.168.1.7"
+const prod_ip = "localhost"
 const dev_ip = "172.0.0.1"
 
 

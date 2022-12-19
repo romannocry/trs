@@ -49,8 +49,39 @@ loggedInUser = {}
 
 
 app = FastAPI()
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    
+    start_time = time.time()
+    #time.sleep(5)
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    response.headers["user"] = str(loggedInUser)
+    return response
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["DELETE", "GET", "POST", "PUT"],
+    allow_headers=["*"],
+)
+
 app.include_router(models.router)
 app.include_router(transactions.router)
+
+@app.get("/api/bonjour/roman")
+def testGet(request: Request):
+    #inputTransaction.drop()
+    return "get"
+
+@app.post("/api/bonjour/roman")
+def testPost(request: Request):
+    #inputTransaction.drop()
+    return "post"
 
 #if __name__ == '__main__':
    # mutiprocessing.freeze_support()
@@ -84,37 +115,4 @@ async def unicorn_exception_handler(request: Request, exc: UnicornException):
         status_code=500,
         content={"message": f"Oops! {exc.name} did something: {exc.label}"},
     )
-
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    
-    start_time = time.time()
-    #time.sleep(5)
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time)
-    response.headers["user"] = str(loggedInUser)
-    return response
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["DELETE", "GET", "POST", "PUT"],
-    allow_headers=["*"],
-)
-
-@app.get("/api/delete/")
-def deleteAll(request: Request):
-    inputTransaction.drop()
-    return "deleted"
-
-
-#    return templates.TemplateResponse("main.html")
-
-@app.get("/app/")
-async def launch_app(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
 

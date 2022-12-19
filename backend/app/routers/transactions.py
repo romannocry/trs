@@ -15,9 +15,13 @@ import base64
 from datetime import date,datetime,timedelta
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+from starlette.middleware.cors import CORSMiddleware
 
 router = APIRouter()
 templates = Jinja2Templates(directory="dist")
+
+
+
 
 class ConnectionManager:
     def __init__(self):
@@ -60,18 +64,6 @@ async def read_transactions():
 async def launch_app(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-
-@router.get("/edit/transaction/{objectModelId}/{payload}")
-def insertTransactionViaBrowser(objectModelId: str, payload: str, request: Request):
-    if bson.objectid.ObjectId.is_valid(objectModelId):
-        inputModelQuery = inputModel.find_one({"_id": ObjectId(objectModelId)})
-        #inputModelQuery_flattend = flatten_dict(json.loads(json.dumps(inputModelQuery, default=json_util.default)))
-        if inputModelQuery is None: 
-            raise UnicornException(name=objectModelId,label="ObjectModelId does not exist!")
-        else: print(inputModelQuery)
-    else: raise UnicornException(name=objectModelId,label="invalid ObjectIdModel, it must be a 12-byte input or a 24-character hex string")
-    
-    return templates.TemplateResponse("main.html", {"request": request, "objectModelId":objectModelId, "payload":payload, "model":inputModelQuery})
 
 @router.post("/test/api/transaction/{objectModelId}/{payload}")
 async def postTransaction(objectModelId: str, payload: str, request: Request):
@@ -170,31 +162,6 @@ async def postTransaction(objectModelId: str, payload: str, request: Request):
     return {"payload": json.dumps(payload, default=json_util.default)}
 
 
-
-@router.get("/views/transactions/{objectModelId}")
-def getTransactionsList(objectModelId: str, request: Request):
-    payload ={}
-    data = []
-    try:
-        query = inputTransaction.find({"objectModelId": ObjectId(objectModelId)})
-
-        for item in list(query):
-            #need to dump it to remove non serializible fields
-            item_json_dumped = json.dumps(item, default=json_util.default)
-            #load it again
-            item_json = json.loads(item_json_dumped)
-            #flatteb the object
-            item_json_flat = flatten_dict(item_json)
-            #append to dataset 
-            data.append(item_json_flat)
-
-        payload['data']=data
-        print(data)
-    except Exception as e:
-        print("error")
-        print(e)    
-
-    return templates.TemplateResponse("transactions.html", {"request": request,"objectModelId":objectModelId, "payload":json.dumps(payload)})
 
 @router.get("/api/transactions/{objectModelId}", tags=["transactions"])
 def getTransactions(objectModelId: str, request: Request):

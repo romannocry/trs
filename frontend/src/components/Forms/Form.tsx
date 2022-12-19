@@ -23,14 +23,15 @@ function Form()  {
     const [data, setData] = useState<any>({});
     const componentIsMounted = useRef(true);
     const { objectModelId } = useParams();
-    const { payload } = useParams();
-    const { type } = useParams();
+    const { payload = null} = useParams();
+    const { type = null } = useParams();
     const typeRef = useRef(false);
     const [isLoading, setIsLoading] = useState(false);
 
     //console.log("loading Form")
     useEffect(() => {
       setIsLoading(true);
+     
       fetch('http://'+prod_ip+':8000/api/models/'+objectModelId, {
         method: 'GET',
         headers: {
@@ -56,92 +57,66 @@ function Form()  {
     useEffect(() => {
       if (typeRef.current) return;
       typeRef.current = true;
-      //console.log(payload)
-      //handleUrlSubmission(payload)
-      //setData(JSON.parse(Buffer.from(String(payload), 'base64').toString('ascii')))
-      switch(type) {
-        case 'fast':
-          console.log("fast")
-          //handleSubmit(payload)
-          break;
-        case 'admin':
-          console.log("admin")
-          break;
-        case 'moderator':
-          console.log("moderator")
-          break;
-        default:
-          console.log("default")
-          break;
-      }
+      handleUrlSubmission(payload,type)
     }, [type]);
 
 
-    const handleUrlSubmission = (payload: any) =>{     
-      const MySwal = withReactContent(Swal)
-      console.log(payload)
-      const encodedData = Buffer.from(JSON.stringify(payload)).toString('base64');
-      //console.log(encodedData)
-      fetch('http://localhost:8000/api/transaction/'+objectModelId+'/'+encodedData, {
-        method: 'POST',
-        headers: {
-          'mode': 'no-cors',
-         'Content-Type': 'application/json',
-         'Authorization': JSON.stringify({'id':1,'username':'roman','email':'babe'})        
-        },
-        //body: JSON.stringify(trs_model)
+    const handleUrlSubmission = (payload: any,type: any) =>{     
+      //console.log(payload)
+      //console.log(type)
 
-     })
-     .then((response) => response.json())
-     .then((data) => {
-        console.log(data);
-        let timerInterval   
-        MySwal.fire({
-            //position: 'top-end',
-            icon: 'success',
-            title: 'Thanks for your input!',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: () => {
-              MySwal.showLoading(null);
-            },
-            didClose: () => {
-              console.log('closing')
-              //navigate('/links/'+data.$oid);
-            }
-          })
-        
-     })
-     .catch((err) => {
-        console.log(err.message);
-        MySwal.fire({
-          //position: 'top-end',
-          icon: 'error',
-          title: err.message,
-          showConfirmButton: false,
-          timer: 4000,
-          timerProgressBar: true,
-          didOpen: () => {
-            MySwal.showLoading(null);
+      if (payload !== null) { 
+        //submitting a payload on click
+        const encodedData = Buffer.from(payload, 'base64').toString('ascii')
+        setData(JSON.parse(encodedData))    
+        const MySwal = withReactContent(Swal)
+        fetch('http://127.0.0.1:8000/api/transaction/'+objectModelId+'/'+payload, {
+          method: 'POST',
+          headers: {
+           'Content-Type': 'application/json',
+           'Authorization': JSON.stringify({'id':1,'username':'romannn','email':'babe'})        
           },
-          didClose: () => {
-            console.log('closing')
-            //navigate('/links/'+data.$oid);
-          }
-        })
-     });
+       })
+       .then((response) => response.json())
+       .then((data) => {
+          //console.log(data);
+          let timerInterval   
+          MySwal.fire({
+              //position: 'top-end',
+              icon: 'success', title: 'Thanks for your input!', showConfirmButton: false,
+              timer: 2000, timerProgressBar: true,
+              didOpen: () => {MySwal.showLoading(null);},
+              didClose: () => {console.log('closing')}
+            })
+            console.log("return")
+       })
+       .catch((err) => {
+          console.log(err.message);
+          MySwal.fire({
+            //position: 'top-end',
+            icon: 'error',title: err.message,showConfirmButton: false,
+            timer: 4000, timerProgressBar: true,
+            didOpen: () => {MySwal.showLoading(null);},
+            didClose: () => {console.log('closing')}
+          })
+       });
+
+    } else {
+        //no payload - trigger on submit
+
+       }
+
         return () => {
         //componentIsMounted.current = false;
         };
       
     };
 
-    const handleSubmit = (closingParams: any) =>{     
+    const handleSubmit = () =>{     
       const MySwal = withReactContent(Swal)
       console.log(data)
       const encodedData = Buffer.from(JSON.stringify(data)).toString('base64');
-      //console.log(encodedData)
+      console.log(encodedData)
       fetch('http://127.0.0.1:8000/api/transaction/'+objectModelId+'/'+encodedData, {
         method: 'POST',
         headers: {
@@ -157,18 +132,10 @@ function Form()  {
         let timerInterval   
         MySwal.fire({
             //position: 'top-end',
-            icon: 'success',
-            title: 'Thanks for your input!',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: () => {
-              MySwal.showLoading(null);
-            },
-            didClose: () => {
-              console.log('closing')
-              //navigate('/links/'+data.$oid);
-            }
+            icon: 'success', title: 'Thanks for your input!', showConfirmButton: false,
+            timer: 2000, timerProgressBar: true,
+            didOpen: () => {MySwal.showLoading(null);},
+            didClose: () => {console.log('closing')}
           })
         
      })
@@ -186,11 +153,8 @@ function Form()  {
     <div>
           {isLoading ? <CircularProgress />: <JsonForms schema={schema} data={data} renderers={materialRenderers} cells={materialCells} onChange={({ data, errors }) => setData(data)}/>}
           
-          <Button variant="contained" endIcon={<SendIcon />} onClick={() => handleSubmit(null)}>
+          <Button variant="contained" endIcon={<SendIcon />} onClick={() => handleSubmit()}>
             Validate
-          </Button>
-          <Button variant="contained" endIcon={<SendIcon />} onClick={() => handleUrlSubmission(data)}>
-            handle URL submission
           </Button>
     </div>
 
@@ -198,3 +162,24 @@ function Form()  {
 }
 
 export default Form;
+
+//          {isLoading ? <CircularProgress />: <JsonForms schema={schema} data={data} renderers={materialRenderers} cells={materialCells} onChange={({ data, errors }) => setData(data)}/>}
+/*
+
+      switch(type) {
+        case 'fast':
+          console.log("fast")
+          handleUrlSubmission(payload)
+          break;
+        case 'admin':
+          console.log("admin")
+          break;
+        case 'moderator':
+          console.log("moderator")
+          break;
+        default:
+          console.log("default")
+          break;
+      }
+
+  */

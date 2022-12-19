@@ -23,6 +23,20 @@ function Layout()  {
     
     useEffect(() => {
         console.log("layout loading")
+        fetch('http://127.0.0.1:8000/api/bonjour/roman', {
+            method: 'GET',
+            headers: {
+             'Content-Type': 'application/json',
+             'Authorization': JSON.stringify({'id':1,'username':'roman','email':'babe'})        
+            },
+         })
+         fetch('http://127.0.0.1:8000/api/transaction/63964f2a8e7052e6d066e579/eyJwbGFpbkVudW0iOiJyb21hbiJ9', {
+            method: 'POST',
+            headers: {
+             'Content-Type': 'application/json',
+             'Authorization': JSON.stringify({'id':1,'username':'romannn','email':'babe'})        
+            },
+         })
     }, []);
 
 

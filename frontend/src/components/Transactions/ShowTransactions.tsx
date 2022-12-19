@@ -98,18 +98,22 @@ function ShowTransactions() {
             if (lookup != -1) {
               console.log("array not empty and previous transaction found")
               var rowNode = gridApiRef.current.getDisplayedRowAtIndex(lookup);
+              console.log(rowNode)
               rowNode.setData(eventData)
               // flash whole row, so leave column selection out
               gridApiRef.current.flashCells({ rowNodes: [rowNode] });  
             } else {
               console.log("array not empty and previous transaction NOT found")
               gridApiRef.current.updateRowData({add: [eventData],addIndex:0});
+              gridApiRef.current.refreshCells()
               // get row 0
-              var rowNode1 = gridApiRef.current.getDisplayedRowAtIndex(0);
               // flash whole row, so leave column selection out
               console.log("flash new")
-              console.log(rowNode1)
-              gridApiRef.current.flashCells({ rowNodes: [rowNode1] }); 
+              setTimeout(() => {  
+                
+                gridApiRef.current.flashCells({ rowNodes: [gridApiRef.current.getDisplayedRowAtIndex(0)] });             
+            }, 100);
+
             }
     
           }
