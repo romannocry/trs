@@ -109,14 +109,15 @@ async def postTransaction(objectModelId: str, payload: str, request: Request):
                         #print(payload)
                         #payload = inputTransaction.find_one_and_update({"_id":ObjectId(transaction['_id'])},{"$set":payload},{"returnOriginal": True})
                         payload = inputTransaction.find_one_and_update({"_id":ObjectId(transaction['_id'])},{"$set":payload}, new=True)
-                        #print(payload)
-                        #print(payload)
-                        #print(type(payload))
-                        payload_flattend = flatten_dict(json.loads(json.dumps(payload, default=json_util.default)))
+   
+                        payload_to_dict = json.loads(json.dumps(payload, default=json_util.default))
+                        del payload_to_dict['user']
+                        payload_flattend = flatten_dict(payload_to_dict)
                         #print(payload_flattend)
 
                         #broadcast only to admin users
                         await manager.broadcast(json.dumps(payload_flattend),objectModelId)
+
                     else: raise UnicornException(name=payload_to_dict,label="transaction was changeable until "+str(inputModelQuery['allow_change']['before']))
                 elif inputModelQuery['allow_multiple']['value']:
                     print("we go here")
@@ -133,7 +134,9 @@ async def postTransaction(objectModelId: str, payload: str, request: Request):
                     #remove objectIDs after insertion
                     #payload.pop("_id")
                     #payload.pop("objectModelId")
-                    payload_flattend = flatten_dict(json.loads(json.dumps(payload, default=json_util.default)))
+                    payload_to_dict = json.loads(json.dumps(payload, default=json_util.default))
+                    del payload_to_dict['user']
+                    payload_flattend = flatten_dict(payload_to_dict)
 
                     #broadcast only to admin users
                     await manager.broadcast(json.dumps(payload_flattend),objectModelId)
@@ -152,7 +155,9 @@ async def postTransaction(objectModelId: str, payload: str, request: Request):
                 #remove objectIDs after insertion
                 #payload.pop("_id")
                 #payload.pop("objectModelId")
-                payload_flattend = flatten_dict(json.loads(json.dumps(payload, default=json_util.default)))
+                payload_to_dict = json.loads(json.dumps(payload, default=json_util.default))
+                del payload_to_dict['user']
+                payload_flattend = flatten_dict(payload_to_dict)
 
                 #broadcast only to admin users
                 await manager.broadcast(json.dumps(payload_flattend),objectModelId)

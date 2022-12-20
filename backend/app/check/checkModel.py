@@ -31,6 +31,18 @@ def dict_compare(objectModel, payloadModel):
                     print("payload "+ str(payloadModel[k]) + " NOT authorized in model, values expected in: "+str(v['enum'])+", value received:"+str(payloadModel[k])+" of type:"+str(type(payloadModel[k])))
                     raise UnicornException(name=payloadModel[k],label="invalid payload, values expected in: "+str(v['enum'])+", value received:"+str(payloadModel[k])+" of type:"+str(type(payloadModel[k])))
            #if not a list, then it is an open type *integer* *datetime*
+            elif 'items' in v.keys():
+                print("is multi item")
+                data = []
+                for item in payloadModel[k]:
+                    lookup = any(x['const'] == item for x in v['items']['oneOf'])
+                    if lookup:
+                        print("payload "+ str(item)+" authorized in model")
+                        data.append(item)
+                    else:
+                        print("payload "+ str(item) + " NOT authorized in model, values expected in: "+str(v['items']['oneOf'])+", value received:"+str(item)+" of type:"+str(type(item)))
+                        raise UnicornException(name=item,label="invalid payload, values expected in: "+str(v['items']['oneOf'])+", value received:"+str(item)+" of type:"+str(type(item)))
+                payload[k] = data
             else:
                 print("is not enum")
                 if isinstance(payloadModel[k],eval(v['type'][0:3])):
