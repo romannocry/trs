@@ -6,7 +6,6 @@ import Example from './components/Home/button';
 import ShowModels from './components/Models/ShowModels';
 import Models from './components/Models/Models';
 import ShowTransactions from './components/Transactions/ShowTransactions';
-import ClickCounter from './components/counter';
 //import "react-toggle/style.css" // for ES6 modules
 import { BrowserRouter as Router, Routes, HashRouter, Link, Route, NavLink } from "react-router-dom";
 import Container from 'react-bootstrap/Container';

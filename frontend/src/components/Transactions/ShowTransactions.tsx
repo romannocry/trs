@@ -3,13 +3,13 @@ import { AgGridReact } from 'ag-grid-react';
 import { BrowserRouter, HashRouter, Link, Route, useParams } from "react-router-dom";
 import io from 'socket.io-client';
 import { initiateSocket } from '../Socket/socket';
-
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { GridApi } from 'ag-grid-community';
+import { apiURL } from '../config';
+import { wsURL } from '../config';
 
-const prod_ip = "192.168.1.7"
-const dev_ip = "172.0.0.1"
+
 
 function ShowTransactions() {
     console.log("loading transactions")
@@ -28,7 +28,7 @@ function ShowTransactions() {
        //console.log(gridApiRef.current)
        //gridOptionsRef.current = params
         // Using Fetch API
-        fetch('http://'+prod_ip+':8000/api/transactions/'+objectModelId, {
+        fetch(apiURL+'/api/transactions/'+objectModelId, {
           method: 'GET',
           headers: {
           'Content-Type': 'application/json',
@@ -68,8 +68,8 @@ function ShowTransactions() {
     useEffect(() => {
         if (socketRef.current) return;
         socketRef.current = true;
-        console.log(transactions)
-        var ws = new WebSocket(`ws://192.168.1.7:8000/feed/transactions/${objectModelId}`);
+        console.log(transactions);
+        var ws = new WebSocket(wsURL+'/feed/transactions/${objectModelId}');
         ws.onmessage = function(event) {
           //console.log(gridOptionsRef.current)
           //console.log(gridApiRef.current)

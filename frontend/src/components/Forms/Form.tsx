@@ -12,10 +12,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {Buffer} from 'buffer';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import Backdrop from '@mui/material/Backdrop';
+import { apiURL } from '../config';
 
-
-const prod_ip = "192.168.1.7"
-const dev_ip = "172.0.0.1"
 
 function Form()  {
     const [schema, setSchema] = useState({});
@@ -32,7 +31,7 @@ function Form()  {
     useEffect(() => {
       setIsLoading(true);
      
-      fetch('http://'+prod_ip+':8000/api/models/'+objectModelId, {
+      fetch(apiURL+'/api/models/'+objectModelId, {
         method: 'GET',
         headers: {
          'Content-Type': 'application/json',
@@ -70,7 +69,7 @@ function Form()  {
         const encodedData = Buffer.from(payload, 'base64').toString('ascii')
         setData(JSON.parse(encodedData))    
         const MySwal = withReactContent(Swal)
-        fetch('http://127.0.0.1:8000/api/transaction/'+objectModelId+'/'+payload, {
+        fetch(apiURL+'/api/transaction/'+objectModelId+'/'+payload, {
           method: 'POST',
           headers: {
            'Content-Type': 'application/json',
@@ -117,7 +116,7 @@ function Form()  {
       console.log(data)
       const encodedData = Buffer.from(JSON.stringify(data)).toString('base64');
       console.log(encodedData)
-      fetch('http://127.0.0.1:8000/api/transaction/'+objectModelId+'/'+encodedData, {
+      fetch(apiURL+'/api/transaction/'+objectModelId+'/'+encodedData, {
         method: 'POST',
         headers: {
          'Content-Type': 'application/json',
@@ -151,11 +150,18 @@ function Form()  {
 
   return (
     <div>
-          {isLoading ? <CircularProgress />: <JsonForms schema={schema} data={data} renderers={materialRenderers} cells={materialCells} onChange={({ data, errors }) => setData(data)}/>}
-          
+          <JsonForms schema={schema} data={data} renderers={materialRenderers} cells={materialCells} onChange={({ data, errors }) => setData(data)}/>
           <Button variant="contained" endIcon={<SendIcon />} onClick={() => handleSubmit()}>
             Validate
           </Button>
+          <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoading}
+          //onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+
     </div>
 
   );

@@ -5,30 +5,76 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Avatar from '@mui/material/Avatar';
+import { red } from '@mui/material/colors';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { apiURL, appURL } from '../config';
 //Goal of Model Links is to give the links to:
 // - fast fill up to 2 attributes without seeing the form - close on post
 // - fast fill up to 2 attributes and arrive on the form page for full completion
 // - full form without fast fill
-const prod_ip = "192.168.1.7"
-const dev_ip = "172.0.0.1"
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 
 const ModelLinks = (props:any) => {
-  const [firstSelection, setFirstSelection] = useState<any>();
-  const [secondSelection, setSecondSelection] = useState<any>();
+  const [firstDim, setFirstDim] = useState<any>([]);
+  const [secondDim, setSecondDim] = useState<any>([]);
   const [model, setModel] = useState<any>({});
   const [modelProps, setModelprops] = useState<any>([]);
-  const [test, setTest] = useState<any>([]);
   const componentIsMounted = useRef(true);
   const { objectModelId } = useParams();
   const encodedString = Buffer.from('your string here').toString('base64');
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
 
 
     console.log("loading model")
     useEffect(() => {
-      test.push(1)
-      console.log(test)
-      fetch('http://'+prod_ip+':8000/api/models/'+objectModelId, {
+     
+      fetch(apiURL+'/api/models/'+objectModelId, {
         method: 'GET',
         headers: {
          'Content-Type': 'application/json',
@@ -50,12 +96,7 @@ const ModelLinks = (props:any) => {
 
         })
         console.log(enum_options)
-        // check if key exists
-        //const hasKey = 'name' in person;
-          
         setModelprops(enum_options)
-        //console.log(data.object_model['properties'])
-        // Handle data
      })
      .catch((err) => {
         console.log(err.message);
@@ -65,16 +106,109 @@ const ModelLinks = (props:any) => {
         };
     }, []);
 
-    const handleChange1 = (event: SelectChangeEvent) => {
-      console.log("1 change")
-      setFirstSelection(event.target.value as string);
+    const setFirstDimension = (event: SelectChangeEvent) => {
+      var selected = modelProps.filter((obj: { key: string; }) => {
+        return obj.key === event.target.value
+      })
+      setFirstDim(selected[0].value.enum)
+      console.log(selected[0].value.enum)
+    };
+    const setSecondDimension = (event: SelectChangeEvent) => {
+      var selected = modelProps.filter((obj: { key: string; }) => {
+        return obj.key === event.target.value
+      })
+      setSecondDim(selected[0].value.enum)
+      console.log(selected[0].value.enum)
     };
 
-    const handleChange2 = (event: SelectChangeEvent) => {
-      console.log("2 change")
-      setSecondSelection(event.target.value as string);
-    };
   return (
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Item One" {...a11yProps(0)} />
+          <Tab label="Item Two" {...a11yProps(1)} />
+          <Tab label="Item Three" {...a11yProps(2)} />
+        </Tabs>
+      </Box>
+      <TabPanel value={value} index={0}>
+      <Card>
+      <CardHeader
+        action={
+          <IconButton aria-label="settings" onClick={() => {navigator.clipboard.writeText(appURL+'/forms/'+objectModelId)}}>
+            <ContentCopyIcon />
+          </IconButton>
+        }
+        title={apiURL+'/forms/'+objectModelId}
+      />
+    </Card>
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <h1>Generate fast URLs</h1>
+        <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">First data point</InputLabel>
+          <Select
+            labelId="demo-simple-select-label" id="select1" value={firstDim} label="Field 1" onChange={setFirstDimension}>
+            {modelProps.map((item: any,index: any) => {
+              return(
+              <MenuItem  key={index} value={item.key}>{item.key}</MenuItem>
+              )
+            })}
+
+          </Select>
+          </FormControl>
+          <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Second data point</InputLabel>
+            <Select
+              labelId="demo-simple-select-label" id="select2" value={secondDim} label="Field 2" onChange={setSecondDimension}>
+              {modelProps.map((item: any,index: any) => {
+                return(
+                <MenuItem  key={index} value={item.key}>{item.key}</MenuItem>
+                )
+              })}
+
+            </Select>
+            </FormControl>
+            {JSON.stringify(firstDim)}
+            {JSON.stringify(secondDim)}
+            <table className="table"> 
+            <tbody>
+            
+              {firstDim.map((item: any,index: any) => {
+              return(
+                <tr>
+                  <td key={index}>{item}</td>
+                  
+                  {secondDim.map((itemd2: any,index2: any) => {<td key={index2}>{itemd2}</td>})}
+                </tr>
+              )
+            })}
+            
+            </tbody>
+            </table>
+    
+
+
+
+
+
+
+
+
+
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        Item Three
+      </TabPanel>
+    </Box>
+
+  );
+}
+
+export default ModelLinks;
+
+/*
+
+
     <div>
         <>
         <h1>Model</h1>
@@ -106,12 +240,7 @@ const ModelLinks = (props:any) => {
         </>
     </div>
 
-  );
-}
 
-export default ModelLinks;
-
-/*
       <>
         <h1>Model</h1>
         <h4>{JSON.stringify(modelProps)}</h4>

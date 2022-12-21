@@ -23,18 +23,18 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import ModelCard from './ModelCard';
-
-const prod_ip = "localhost"
-const dev_ip = "172.0.0.1"
+import { apiURL } from '../config';
 
 
 function ShowModels() {
+  
   // Declare a new state variable, which we'll call "count"
   const [models, setModels] = useState([]);
   const componentIsMounted = useRef(true);
   console.log("loading Models List")
   useEffect(() => {
-    fetch('http://'+prod_ip+':8000/api/models', {
+    console.log(apiURL)
+    fetch(apiURL+'/api/models', {
       method: 'GET',
       headers: {
        'Content-Type': 'application/json',
