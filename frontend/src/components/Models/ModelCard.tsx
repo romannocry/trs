@@ -92,12 +92,12 @@ const ModelCard = (props:any) => {
             <DataArrayIcon />
           </IconButton>
         </Link>
-        <Link to={`/forms/${modelState._id.$oid}`}>
+        <Link to={`/transaction/${modelState._id.$oid}`}>
           <IconButton aria-label="Show form">
             <DynamicFormIcon />
           </IconButton>
         </Link>
-        <Link to={`/links/${modelState._id.$oid}`}>
+        <Link to={`/models/${modelState._id.$oid}`}>
           <IconButton aria-label="Show links">
             <ShareIcon />
           </IconButton>

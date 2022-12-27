@@ -56,9 +56,6 @@ def deleteAll(request: Request):
     inputTransaction.drop()
     return "deleted"
 
-@router.get("/transactions/", tags=["transactions"])
-async def read_transactions():
-    return [{"username": "Rick"}, {"username": "Morty"}]
 
 @router.get("/forms/{objectModelId}/{payload}")
 async def launch_app(request: Request):

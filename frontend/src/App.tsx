@@ -2,8 +2,7 @@ import React,{ useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import CollapsibleExample from './components/Navbar/main';
-import Example from './components/Home/button';
-import ShowModels from './components/Models/ShowModels';
+import ShowModels from './components/Models/ModelList';
 import Models from './components/Models/Models';
 import ShowTransactions from './components/Transactions/ShowTransactions';
 //import "react-toggle/style.css" // for ES6 modules
@@ -12,8 +11,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CreateModel from './components/Models/CreateModel';
-import Form from './components/Forms/Form';
-import ModelLinks from './components/Models/ModelLinks';
+import CreateTransaction from './components/Transactions/CreateTransaction';
+import ModelSettings from './components/Models/ModelSettings';
 import Layout from './components/Testing/layout';
 
 function App() {
@@ -34,12 +33,12 @@ function App() {
           <Route path="/layout" element={<Layout/>}/>
           <Route path="/models" element={<Models/>}/>
           <Route path="/models/create" element={<CreateModel/>}/>
-          <Route path="/links/:objectModelId" element={<ModelLinks/>}/>
-          <Route path="/forms/:objectModelId">
-            <Route path="" element={<Form />} />
+          <Route path="/models/:objectModelId" element={<ModelSettings/>}/>
+          <Route path="/transaction/:objectModelId">
+            <Route path="" element={<CreateTransaction />} />
             <Route path=":payload">
-            <Route path="" element={<Form />} />
-            <Route path=":type" element={<Form />} />
+            <Route path="" element={<CreateTransaction />} />
+            <Route path=":type" element={<CreateTransaction />} />
             </Route>
           </Route>
           <Route path="/transactions/:objectModelId" element={<ShowTransactions/>}/>

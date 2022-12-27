@@ -51,7 +51,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set BUILD_PATH=../backend/dist&&react-scripts build",
+    "build": "set BUILD_PATH=../backend/ui&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import BasicCard from './ModelCard';
-import ShowModels from './ShowModels';
+import ShowModels from './ModelList';
 import ModelHeader from './ModelHeader';
 
 import Divider from '@mui/material/Divider';

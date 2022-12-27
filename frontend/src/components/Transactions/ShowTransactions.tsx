@@ -69,7 +69,7 @@ function ShowTransactions() {
         if (socketRef.current) return;
         socketRef.current = true;
         console.log(transactions);
-        var ws = new WebSocket(wsURL+'/feed/transactions/${objectModelId}');
+        var ws = new WebSocket(wsURL+'/feed/transactions/'+objectModelId);
         ws.onmessage = function(event) {
           //console.log(gridOptionsRef.current)
           //console.log(gridApiRef.current)

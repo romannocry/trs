@@ -1,5 +1,5 @@
 from asyncio.windows_events import NULL
-from tkinter.tix import INTEGER
+import multiprocessing
 from typing import List
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import HTMLResponse
@@ -18,7 +18,6 @@ import io
 from starlette.responses import StreamingResponse
 import socket
 from starlette.middleware.cors import CORSMiddleware
-from jinja2_base64_filters import jinja2_base64_filters
 from enum import Enum
 from datetime import date,datetime,timedelta
 from enum import Enum
@@ -30,22 +29,15 @@ from starlette.responses import Response
 from unicornException import UnicornException
 from bson import json_util
 from collections.abc import MutableMapping
-import win32serviceutil
-import win32service
-import win32event
-import servicemanager
-import socket
-import sys
 from multiprocessing import cpu_count, freeze_support
 from app.routers import models
 from app.routers import transactions
+from app.routers import ui
 from app.check.checkModel import dict_compare,flatten_dict
 from app.db.db import db_url
 from fastapi.security import OAuth2PasswordBearer
 
 
-
-loggedInUser = {}
 
 
 app = FastAPI()
@@ -58,7 +50,6 @@ async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
-    response.headers["user"] = str(loggedInUser)
     return response
 
 
@@ -70,22 +61,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ui.router)
 app.include_router(models.router)
 app.include_router(transactions.router)
 
-@app.get("/api/bonjour/roman")
-def testGet(request: Request):
-    #inputTransaction.drop()
-    return "get"
 
-@app.post("/api/bonjour/roman")
-def testPost(request: Request):
-    #inputTransaction.drop()
-    return "post"
-
-#if __name__ == '__main__':
-   # mutiprocessing.freeze_support()
-    #uvicorn.run("app:app", host="0.0.0.0", port=8000, log_level="info")
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+    uvicorn.run("server:app", host="0.0.0.0", port=8000, log_level="info",reload="true")
+    
 #def start_server(host="127.0.0.1",port=8000):
 #    uvicorn.run("server:app",
 #                host=host,
@@ -99,9 +83,9 @@ def testPost(request: Request):
 #    uvicorn.run("server:app", host="127.0.0.1", port=8000, log_level="info")
 
 
-app.mount("/", StaticFiles(directory="dist", html=True), name="static")
+app.mount("/", StaticFiles(directory="ui", html=True), name="static")
 
-templates = Jinja2Templates(directory="dist")
+templates = Jinja2Templates(directory="ui")
 
 # Setting up connection with MongoDB
 client = MongoClient(db_url)
