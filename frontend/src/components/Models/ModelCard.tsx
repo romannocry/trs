@@ -27,9 +27,6 @@ import Stack from '@mui/material/Stack';
 import DataArrayIcon from '@mui/icons-material/DataArray';
 import DynamicFormIcon from '@mui/icons-material/DynamicForm';
 
-const prod_ip = "192.168.1.7"
-const dev_ip = "172.0.0.1"
-
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
