@@ -20,6 +20,7 @@ import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import {Link, Routes, Route, useNavigate} from 'react-router-dom';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import { apiURL } from '../config';
 
 
 
@@ -58,30 +59,30 @@ function CreateModel() {
     const newschema = {
       "type":"object",
       "properties":{
-        "plainEnum": {
+        "A drop downlist example": {
           "type": 'string',
-          "enum": ['foo', 'bar', 'foobar']
+          "enum": ['SG', 'NON SG']
         },
 
         "rating":{
           "type":"integer"
         },
-        "oneOfMultiEnum": {
+        "SMC Choice": {
           "type": "array",
           "uniqueItems": true,
           "items": {
             "oneOf": [
               {
-                "const": "foo",
-                "title": "My Foo"
+                "const": "IDX",
+                "title": "Indexation"
               },
               {
-                "const": "bar",
-                "title": "My Bar"
+                "const": "FSI",
+                "title": "FSI"
               },
               {
-                "const": "foobar",
-                "title": "My FooBar"
+                "const": "QMM",
+                "title": "Quantitative Market Making"
               }
             ]
           }
@@ -93,7 +94,7 @@ function CreateModel() {
         }
       },
       "required":[
-        "name"
+        "rating"
       ]
     }
     const initialData = person.data;
@@ -119,7 +120,7 @@ function CreateModel() {
 
       //console.log(trs_model)
 
-      fetch('http://127.0.0.1:8000/api/models', {
+      fetch(apiURL+'/api/models', {
         method: 'POST',
         headers: {
          'Content-Type': 'application/json',
@@ -143,7 +144,7 @@ function CreateModel() {
             MySwal.showLoading(null);
           },
           didClose: () => {
-            navigate('/links/'+data.$oid);
+            navigate('/models/'+data.$oid);
           }
         })
      })
@@ -178,10 +179,6 @@ function CreateModel() {
       
     };
 
-    //onValueChange={this.onValueChange}
-    //highlight={this.highlight}
-    //padding={10}
-    //style={styles.root}
 
     return (
       <div>

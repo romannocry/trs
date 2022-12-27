@@ -1,41 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 
-
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  },
-];
-
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
 
 //Matrix component
 const Matrix = (props:any) => {
@@ -43,31 +9,36 @@ const Matrix = (props:any) => {
   const [d2, setD2] = useState(props.d2);
   useEffect(() => {
     console.log(props)
+    setD1(props.d1)
+    setD2(props.d2)
   }, []);
 
 
   return (
     <>
-
-<div style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-      />
-    </div>
-    <Box>{d1}</Box>
-    <Box>{d2}</Box>
+    a
+    {d1}
     <table className="table"> 
       <tbody>
-      
-        {d1.map((item: any,index: any) => {
+      <tr>
+        <td> Q1\Q2</td>
+        {d2.map((d2item: any,index: any) => {
+        return(
+            <td key={index}>{d2item}</td>
+          )
+        })}
+      </tr>
+        {d1.map((d1item: any,index: any) => {
         return(
           <tr>
-            <td key={index}>{item}</td>
-                      </tr>
+            <td key={index}>{d1item}</td>
+            {d2.map((d2item: any,index: any) => {
+            return(
+                <td key={index}>{d1item} + {d2item}</td>
+              )
+            })}
+          </tr>
+        
         )
       })}
       
@@ -79,3 +50,22 @@ const Matrix = (props:any) => {
 };
 
 export default Matrix;
+
+/*
+
+              <table className="table"> 
+              <tbody>
+              
+                {firstDim.map((item: any,index: any) => {
+                return(
+                  <tr>
+                    <td key={index}>{item}</td>
+                    
+                    {secondDim.map((itemd2: any,index2: any) => {<td key={index2}>{itemd2}</td>})}
+                  </tr>
+                )
+              })}
+              
+              </tbody>
+              </table>
+*/

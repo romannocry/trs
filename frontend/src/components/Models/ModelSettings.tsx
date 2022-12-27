@@ -167,6 +167,7 @@
             })}
             </Select>
           </FormControl>
+          
           <Matrix d1={firstDim} d2={secondDim}/>
 
         </TabPanel>
